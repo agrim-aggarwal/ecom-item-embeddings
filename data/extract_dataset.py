@@ -91,7 +91,8 @@ def clean_bsr(df: pd.DataFrame) -> pd.DataFrame:
 #     return recovered_text
 
 def remove_unrecoverable_encoding(text):
-    clean_text = re.sub(r'\S*\\u[0-9a-fA-F]{4}\S*', '', text)
+    # clean_text = re.sub(r'[a-zA-Z0-9\\]*\\u[0-9a-fA-F]{4}[a-zA-Z0-9\\]*', '', text)
+    clean_text = re.sub(r'[.*]*\\u[0-9a-fA-F]{4}[.*]*', '', text)
     return(clean_text)
 
 def correct_encoding(df: pd.DataFrame, cols : list[str]) -> pd.DataFrame:

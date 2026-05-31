@@ -1,16 +1,14 @@
 # Vocabulary Expansion
 
 ## Goal
-Add domain tokens not well-represented in ModernBERT's WordPiece vocab:
-brand names, SKU patterns, category-specific jargon, units (e.g. "gsm", "denier").## Pipeline order (must run in this sequence)
-1. mine_tokens.py     — frequency-based candidate extraction from raw corpus
-2. manual review      — human check of new_tokens.txt before committing
-3. extend_vocabulary.py   — Add the new tokens to the tokenizer And adjust model vocabulary length. Save the tokeniser and the model to models/tokenizer/v1/
-4. validate_tokenizer.py — regression check
+To identify potentially new tokens important to the domain, and add them to the vocabulary
 
-## Embedding init strategy
-New token embeddings = mean of all existing embeddings (not random init).
+## Scripts in this folder
+ - mine_tokens.py : identifies potential words that should be added to the vocabulary
+ - extend_vocabulary.py : adds the identfied tokens
+ - validate_tokenizer.py : verifies all selected additional tokens are added to the tokenizer and model vocabulary length is updated
 
-## Don'ts
-- Don't add tokens already clean single tokens in base vocab
-- Don't add more than ~2000 tokens without re-evaluating embedding init strategy
+## Subfolders in this folder
+- configs : contains parameters related to raw data location, model name etc
+- token_stats : This is where the script mine_tokens.py dumps the shortlisted tokens with their stats
+- new_tokens : Contains the list of new tokens to be added to the tokenizer

@@ -3,7 +3,7 @@ Generate boilerplate for the data/ module.
 Create the following files with working skeleton code:
 
 - data/extract_dataset.py
-  - Given an imput category {cat} copy the file "/Users/agrimaggarwal/Documents/data/ecom-amazon-pdp/data_{cat}.zip" into the folder data/raw/ and unzip it to extract the .csv file. Each file contains e-commerce SKU level metadata for a broader category
+  - Given an imput category {cat} copy the file "/Users/agrimaggarwal/Documents/data/ecom-amazon-pdp/data_{cat}.zip" into the folder data/raw/ and unzip it to extract the .csv file. Each file contains e-commerce SKU level metadata for a broader category. The data format is explained in CLAUDE.MD
   - Replace Special characters like '›' from the field 'CATEGORY' with the standard character '>'
   - Replace the BRAND_NAME with blank string if its value is from the file 'data/dummy_brands.py'
   - Clean the field 'BSR' to make to clean its format

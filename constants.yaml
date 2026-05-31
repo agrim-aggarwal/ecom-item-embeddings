@@ -1,3 +1,3 @@
 raw_model_hf_path: answerdotai/ModernBERT-base
 raw_model_local_path: ./../ModernBERT-base
-model_from_local_or_hf: local
+model_from_local_or_hf: hf

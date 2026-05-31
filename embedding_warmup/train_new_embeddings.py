@@ -43,6 +43,7 @@ class WarmupConfig:
     checkpoint_dir: Path = field(default_factory=lambda: Path("models/embedding_warmup_checkpoint"))
     loss_log_file: Path = field(default_factory=lambda: Path("logs/embedding_warmup_loss.jsonl"))
     eval_log_file: Path = field(default_factory=lambda: Path("logs/embedding_warmup_eval.jsonl"))
+    eval_sample_results_file: Path = field(default_factory=lambda: Path("logs/embedding_warmup_eval_examples.jsonl"))
     train_split: float = 0.9
     random_seed: int = 42
     callback_set_size: int = 10_000
@@ -60,7 +61,7 @@ class WarmupConfig:
 
 _PATH_FIELDS = {
     "tokenizer_dir", "new_tokens_dir", "data_dir", "processed_dir",
-    "checkpoint_dir", "loss_log_file", "eval_log_file",
+    "checkpoint_dir", "loss_log_file", "eval_log_file", "eval_sample_results_file"
 }
 
 
@@ -179,7 +180,7 @@ def run(cfg: WarmupConfig) -> None:
         device = "cpu"
     print(f"[warmup] device={device}")
 
-    for p in (cfg.loss_log_file.parent, cfg.eval_log_file.parent, cfg.checkpoint_dir):
+    for p in (cfg.loss_log_file.parent, cfg.eval_log_file.parent, cfg.eval_sample_results_file.parent, cfg.checkpoint_dir):
         p.mkdir(parents=True, exist_ok=True)
 
     training_args = TrainingArguments(
@@ -211,6 +212,7 @@ def run(cfg: WarmupConfig) -> None:
                 callback_dataset=callback_ds,
                 new_token_ids=new_token_ids,
                 log_file=cfg.eval_log_file,
+                log_examples_file=cfg.eval_sample_results_file,
                 collator=collator,
                 eval_steps=cfg.eval_steps,
                 device=device,
@@ -222,6 +224,10 @@ def run(cfg: WarmupConfig) -> None:
     trainer.train()
     print("[warmup] done")
 
+    # eval_sample_results_file = 'logs/embedding_warmup_eval_examples.jsonl' # cfg.eval_sample_results_file
+    # df = pd.read_json(eval_sample_results_file, lines=True)
+    # new_filename = eval_sample_results_file.replace('.jsonl', '.csv')
+    # df.to_csv(new_filename, index=False)
 
 # ---------------------------------------------------------------------------
 # CLI

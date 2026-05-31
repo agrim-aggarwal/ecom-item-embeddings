@@ -24,10 +24,13 @@ from transformers import (
 # ---------------------------------------------------------------------------
 
 def build_input_text(row: dict[str, Any], sep_token: str) -> str:
+
     title = str(row.get("TITLE", "") or "")
-    overview = str(row.get("OVERVIEW", "") or "")
-    bullets = str(row.get("BULLETS", "") or "")
-    return f"Title: {title} {sep_token} Attributes: {overview} {sep_token} Features: {bullets}"
+    overview = '\n'.join([f"{k} : {v}" for k,v in json.loads(row.get("OVERVIEW", "")).items()]) # str( or "")
+    bullets = '\n'.join([f'- {x}' for x in json.loads(row.get("BULLETS", ""))]) #str(row.get("BULLETS", "") or "")
+
+    return f"TITLE: {title} {sep_token}\nATTRIBUTES:\n{overview} {sep_token}\nFEATURES:\n{bullets}"
+
 
 
 # ---------------------------------------------------------------------------
@@ -200,6 +203,7 @@ class NewTokenEvalCallback(TrainerCallback):
         callback_dataset: Dataset,
         new_token_ids: list[int],
         log_file: Path,
+        log_examples_file: Path,
         collator: NewTokenForceMaskCollator,
         eval_steps: int = 64,
         eval_batch_size: int = 32,
@@ -211,6 +215,7 @@ class NewTokenEvalCallback(TrainerCallback):
         self.new_token_ids = new_token_ids
         self._new_token_tensor: Tensor | None = None  # built lazily on first eval
         self.log_file = log_file
+        self.log_examples_file = log_examples_file
         self.collator = collator
         self.eval_steps = eval_steps
         self.eval_batch_size = eval_batch_size
@@ -267,12 +272,20 @@ class NewTokenEvalCallback(TrainerCallback):
             new_total += new_mask.sum().item()
 
             if batch_idx*self.eval_batch_size < 16:
+                # print(f'{len(input_ids)=}')
+                # print(f'{len(labels)=}')
                 for i in range(input_ids.shape[0]):
                     masked_pos = labels[i] != -100
+                    # print(f'Callback index = {i}')
+                    label_i = input_ids[i].clone()
+                    label_i[masked_pos] = labels[i][masked_pos]
+                    preds_i = input_ids[i].clone()
+                    preds_i[masked_pos] = preds[i][masked_pos]
                     sample_records.append({
+                        "step": step,
                         "input": self.tokenizer.decode(input_ids[i], skip_special_tokens=False, clean_up_tokenization_spaces=False),
-                        "target": self.tokenizer.decode(labels[i], clean_up_tokenization_spaces=False),
-                        "predicted": self.tokenizer.decode(preds[i], clean_up_tokenization_spaces=False),
+                        "target": self.tokenizer.decode(label_i, clean_up_tokenization_spaces=False),
+                        "predicted": self.tokenizer.decode(preds_i, clean_up_tokenization_spaces=False)
                     })
 
         avg_loss = total_loss / n_batches if n_batches else 0.0
@@ -286,10 +299,13 @@ class NewTokenEvalCallback(TrainerCallback):
             "new_token_accuracy": round(new_token_accuracy, 4),
             "total_masked": all_total,
             "new_token_masked": new_total,
-            "samples": sample_records,
         }
         with open(self.log_file, "a") as f:
             f.write(json.dumps(record) + "\n")
+
+        with open(self.log_examples_file, "a") as f:
+            for record in sample_records:
+                f.write(json.dumps(record) + "\n")
 
         print(
             f"[eval] step={step}  loss={avg_loss:.4f}  "

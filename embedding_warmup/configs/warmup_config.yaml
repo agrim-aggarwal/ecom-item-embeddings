@@ -8,11 +8,12 @@ processed_dir: data/processed
 checkpoint_dir: models/embedding_warmup_checkpoint
 loss_log_file: logs/embedding_warmup_loss.jsonl
 eval_log_file: logs/embedding_warmup_eval.jsonl
+eval_sample_results_file: logs/embedding_warmup_eval_examples.jsonl
 
 # Data splitting
 train_split: 0.9
 random_seed: 42
-callback_set_size: 10000
+callback_set_size: 50
 
 # Tokenization — median seq length is 348, P90 is 515; 512 is the right cap
 max_length: 512
@@ -33,5 +34,5 @@ fp16: false
 dataloader_pin_memory: false   # MPS ignores pin_memory; disabling avoids the overhead
 
 # Logging / checkpointing
-eval_steps: 64
+eval_steps: 16
 save_steps: 1000
