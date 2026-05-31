@@ -31,8 +31,8 @@ _STATS_DIR = Path("data/raw_stats")
 
 def copy_and_extract(cat: str, source_dir: Path = _SOURCE_DIR) -> Path:
     """Copy the zip for *cat* into data/raw/ and return the path to the extracted CSV."""
-    src = source_dir / f"data_{cat}.zip"
-    dest_zip = _RAW_DIR / f"data_{cat}.zip"
+    src = source_dir / f"data_{cat}.csv.zip"
+    dest_zip = _RAW_DIR / f"data_{cat}.csv.zip"
     _RAW_DIR.mkdir(parents=True, exist_ok=True)
 
     shutil.copy2(src, dest_zip)

@@ -12,3 +12,5 @@ __pycache__
 *.pyzwz
 poetry.lock
 .DS_Store
+vocab/tokenizer
+logs/*.jsonl

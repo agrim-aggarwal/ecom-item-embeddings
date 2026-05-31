@@ -37,7 +37,7 @@ def run(cfg: ValidateConfig) -> None:
         )
 
     print(f"[validate] loading tokenizer from {cfg.tokenizer_dir}")
-    import pdb;pdb.set_trace();
+    
     tokenizer = AutoTokenizer.from_pretrained(str(cfg.tokenizer_dir))
     new_tokens = _load_new_tokens(cfg)
     vocab = tokenizer.get_vocab()
