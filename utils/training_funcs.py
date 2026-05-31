@@ -266,13 +266,13 @@ class NewTokenEvalCallback(TrainerCallback):
             new_correct += (preds[new_mask] == labels[new_mask]).sum().item()
             new_total += new_mask.sum().item()
 
-            if batch_idx == 0:
-                for i in range(min(3, input_ids.shape[0])):
+            if batch_idx*self.eval_batch_size < 16:
+                for i in range(input_ids.shape[0]):
                     masked_pos = labels[i] != -100
                     sample_records.append({
                         "input": self.tokenizer.decode(input_ids[i], skip_special_tokens=False, clean_up_tokenization_spaces=False),
-                        "target": self.tokenizer.decode(labels[i][masked_pos], clean_up_tokenization_spaces=False),
-                        "predicted": self.tokenizer.decode(preds[i][masked_pos], clean_up_tokenization_spaces=False),
+                        "target": self.tokenizer.decode(labels[i], clean_up_tokenization_spaces=False),
+                        "predicted": self.tokenizer.decode(preds[i], clean_up_tokenization_spaces=False),
                     })
 
         avg_loss = total_loss / n_batches if n_batches else 0.0

@@ -9,11 +9,13 @@ Usage:
 import argparse
 from dataclasses import dataclass, field
 from pathlib import Path
+import yaml
 
 import torch
 from transformers import AutoModelForMaskedLM, AutoTokenizer
 
-_TOKENIZER_HUB = "answerdotai/ModernBERT-base"
+constants = yaml.safe_load(open('constants.yaml'))
+_TOKENIZER_HUB = constants['raw_model_hf_path'] if constants['model_from_local_or_hf']=='hf' else constants['raw_model_local_path']
 
 
 @dataclass
