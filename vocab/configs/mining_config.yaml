@@ -1,0 +1,9 @@
+corpus_dir: data/raw
+output_dir: vocab/token_stats
+tokenizer_name: answerdotai/ModernBERT-base
+text_cols:
+  - TITLE
+  - CATEGORY
+  - OVERVIEW
+  - BULLETS
+min_word_freq: 5

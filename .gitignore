@@ -1,0 +1,14 @@
+*.csv
+*.xlsx
+__pycache__
+*.ipynb_checkpoints
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
+*.pyzw
+*.pyzwz
+poetry.lock
+.DS_Store
